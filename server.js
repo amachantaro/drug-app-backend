@@ -10,7 +10,22 @@ const port = process.env.PORT || 5001;
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-app.use(cors());
+const allowedOrigins = [
+  'https://drug-app-frontend.vercel.app', // あなたのVercelフロントエンドのURL
+  // 開発用にlocalhostも許可する場合は以下を追加
+  // 'http://localhost:3000',
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true // 必要に応じて追加
+}));
 app.use(express.json({ limit: '50mb' })); // Increase limit for image uploads
 
 // Converts a File object to a GoogleGenerativeAI.Part object.
